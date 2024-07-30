@@ -19,6 +19,7 @@ const passport=require("passport")
 const LocalStrategy=require("passport-local")
 const User=require('./models/user.js')
 const userRouter=require("./routes/user.js")
+const Listing=require("./models/listing.js")
 
 
 const path=require("path")
@@ -36,6 +37,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(methodOverride("_method"))
 const ejsMate=require("ejs-mate")
 const { getMaxListeners } = require("events")
+const { error } = require('console')
 
 app.engine('ejs',ejsMate)
 app.use(express.static(path.join(__dirname,"/public")))
@@ -54,13 +56,22 @@ async function main(){
 }
 port=3000;
 
+
+
 const store=MongoStore.create({
-    mongoUrl:dburl,
+ mongoUrl:dburl,
     crypto:{
         secret:process.env.SECRET,
     },
     touchAfter:24*3600
 })
+
+
+
+
+
+
+
 
 
 store.on("error",()=>{
@@ -98,10 +109,9 @@ app.use((req,res,next)=>{
     res.locals.success=req.flash("success")
     res.locals.error=req.flash("error")
     res.locals.currUser=req.user;
-    next();
+  
+     next();
 })
-
-
 
 app.get("/demouser",async(req,res)=>{
     let fakeUser=new User({
@@ -113,11 +123,13 @@ app.get("/demouser",async(req,res)=>{
 })
    
 
-app.get('/',(req,res)=>{
-    res.render("index.js")
+
+
+app.get('/',async(req,res)=>{
+    const listings= await Listing.find({})
+     
+    res.render("listings/index.ejs",{listings});
 })
-
-
 
 
 app.use("/listings",listingRouter)
