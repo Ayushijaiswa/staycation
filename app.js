@@ -1,6 +1,6 @@
 
 require('dotenv').config()
-console.log(process.env.CLOUD_API_KEY)
+
 
 
 
@@ -102,6 +102,7 @@ app.use((req,res,next)=>{
 })
 
 
+
 app.get("/demouser",async(req,res)=>{
     let fakeUser=new User({
         email:"student@gmail.com",
@@ -109,6 +110,11 @@ app.get("/demouser",async(req,res)=>{
     })
  const registeredUser= await  User.register(fakeUser,"helloworld")
  res.send(registeredUser)
+})
+   
+
+app.get('/',(req,res)=>{
+    res.render("index.js")
 })
 
 
